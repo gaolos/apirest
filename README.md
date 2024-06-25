@@ -226,6 +226,7 @@ La API devuelve los siguientes campos para el presupuesto:
   - `base`: Importe base.
   - `total`: Importe total.
   - `numenv`: Número de envíos por correo electrónico.
+  - `obs_priv`: Observaciones privadas.
 
 ## Ejemplo de Respuesta
 
