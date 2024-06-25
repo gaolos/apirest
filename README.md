@@ -8,6 +8,7 @@ La API de Gaolos proporciona un acceso estructurado a los datos a través de var
 - [Obtener información de un cliente](#Obtener-información-de-un-cliente)
 - [Obtener Factura](#obtener-factura)
 - [Obtener Presupuesto](#obtener-presupuesto)
+- [Obtener Detalles Presupuesto](#obtener-detalles-presupuesto)
 - [Obtener Mantenimiento](#obtener-mantenimiento)
 - [Obtener Documento](#obtener-documento)
 - [Devolución de un Error](#devolución-de-un-error)
@@ -213,7 +214,7 @@ La solicitud debe incluir los siguientes parámetros en formato JSON:
 #### Formato de la Respuesta
 La API devuelve los siguientes campos para el presupuesto:
 
-- **Factura:**
+- **Presupuesto:**
   - `id_pres2`: Identificador del presupuesto.
   - `fe_al`: Fecha de creación.
   - `tipopres`: Tipo presupuesto, si procede.
@@ -242,6 +243,80 @@ La API devuelve los siguientes campos para el presupuesto:
     "base": 58,
     "total": 70.18,
     "numenv": 0
+  },
+  "err": {
+    "eserror": false,
+    "salir": false
+  }
+}
+```
+
+---
+
+### Obtener Detalles Presupuesto
+Para solicitar los detalles de un presupuesto específico, se debe realizar una petición al endpoint siguiente:
+
+```
+https://api.gaolos.com/xxx/apirestgetpresupuestodetalles?paramsin=
+```
+
+#### Parámetros de Entrada
+La solicitud debe incluir los siguientes parámetros en formato JSON:
+
+```json
+{
+  "parameters": {
+    "RefNeg": "Referencia negocio",
+    "ClaveSesion": "Token",
+    "ParamsKeys": ["id_pres2"],
+    "ParamsValues": [4011118]
+  }
+}
+```
+
+- `RefNeg`: Referencia del negocio.
+- `ClaveSesion`: Token de autenticación.
+- `ParamsKeys`: Clave de identificación del presupuesto.
+- `ParamsValues`: Identificador del presupuesto que se desea obtener.
+
+**Nota:** `ParamsValues` debe contener el identificador único del presupuesto. La API devuelve los detalles de un único presupuesto por solicitud.
+
+### Respuesta de la API
+
+#### Formato de la Respuesta
+La API devuelve los siguientes campos para el presupuesto:
+
+- **Presupuesto:**
+  - `det`: detalles del presupuesto.
+
+- **Presupuesto Detalles:**
+  - `can`: Cantidad.
+  - `expo`: Exposición del servicio editado.
+  - `id_serv2`: Identificador del servicio.
+  - `serv`: Descripción del servicio.
+  - `preciouf`: Precio unitario final.
+
+## Ejemplo de Respuesta
+
+```json
+{
+  "obj": {
+    "det": [
+      {
+        "can": "10",
+        "expo": "Descripción del servicio 1",
+        "id_serv2": "001",
+        "serv": "Servicio 1",
+        "preciouf": "100.00"
+      },
+      {
+        "can": "20",
+        "expo": "Descripción del servicio 2",
+        "id_serv2": "002",
+        "serv": "Servicio 2",
+        "preciouf": "200.00"
+      }
+    ]
   },
   "err": {
     "eserror": false,
