@@ -7,8 +7,11 @@ La API de Gaolos proporciona un acceso estructurado a los datos a través de var
 ## Índice
 - [Obtener información de un cliente](#Obtener-información-de-un-cliente)
 - [Obtener Factura](#obtener-factura)
+- [Obtener Detalles Factura](#obtener-detalles-factura)
+- [Obtener Facturas Entre Fechas](#obtener-facturas-entre-fechas)
 - [Obtener Presupuesto](#obtener-presupuesto)
 - [Obtener Detalles Presupuesto](#obtener-detalles-presupuesto)
+- [Obtener Asistencias Entre Fechas](#obtener-asistencias-entre-fechas)
 - [Obtener Mantenimiento](#obtener-mantenimiento)
 - [Obtener Documento](#obtener-documento)
 - [Devolución de un Error](#devolución-de-un-error)
@@ -125,12 +128,15 @@ La API devuelve los siguientes campos para la factura y sus vencimientos:
   - `sicob`: Estado de cobro (totalmente cobrada o no).
   - `serie`: Serie de la factura.
   - `emp`: Cliente.
+  - `id_cli2`: Identificador del cliente.
   - `admin`: Administrador relacionado (si aplica).
   - `id_adm2`: Identificador del administrador relacionado (si aplica).
   - `base`: Importe base.
   - `total`: Importe total.
   - `numenv`: Número de envíos por correo electrónico.
   - `ven`: Lista de vencimientos.
+  - `obs`: Observaciones de la factura.
+  - `id_soli2`: Identificador de la tarea pendiente.
 
 - **Vencimiento:**
   - `fe_ve`: Fecha de vencimiento.
@@ -153,6 +159,7 @@ La API devuelve los siguientes campos para la factura y sus vencimientos:
     "sicob": true,
     "serie": "R24-",
     "emp": "CONSTRUCCIONES MANOLO, S.L. ",
+    "id_cli2": "12345",
     "admin": "",
     "id_adm2": "",
     "base": -24,
@@ -169,11 +176,143 @@ La API devuelve los siguientes campos para la factura y sus vencimientos:
         "fe_dev": null,
         "enespera": null
       }
-    ]
+    ],
+   "obs": "Factura corregida por error en importe.",
+    "id_soli2": "9876"
   },
   "err": {
     "mensaje": null,
     "eserror": false
+  }
+}
+```
+
+---
+
+### Obtener Detalles Factura
+Para solicitar los detalles de una factura específica, se debe realizar una petición al endpoint siguiente:
+
+```
+https://api.gaolos.com/xxx/apirestgetfacturadetalles?paramsin=
+```
+
+#### Parámetros de Entrada
+La solicitud debe incluir los siguientes parámetros en formato JSON:
+
+```json
+{
+  "parameters": {
+    "RefNeg": "Referencia negocio",
+    "ClaveSesion": "Token",
+    "ParamsKeys": ["id_fac"],
+    "ParamsValues": [4011118]
+  }
+}
+```
+
+- `RefNeg`: Referencia del negocio.
+- `ClaveSesion`: Token de autenticación.
+- `ParamsKeys`: Clave de identificación de la factura.
+- `ParamsValues`: Identificador de la factura que se desea obtener.
+
+**Nota:** `ParamsValues` debe contener el identificador único de la factura. La API devuelve los detalles de una única factura por solicitud.
+
+### Respuesta de la API
+
+#### Formato de la Respuesta
+La API devuelve los siguientes campos para la factura:
+
+- **Factura:**
+  - `det`: detalles de la factura.
+
+- **Factura Detalles:**
+  - `can`: Cantidad.
+  - `expo`: Exposición del servicio editado.
+  - `id_serv2`: Identificador del servicio.
+  - `serv`: Descripción del servicio.
+  - `preciouf`: Precio unitario final.
+
+## Ejemplo de Respuesta
+
+```json
+{
+  "obj": {
+    "det": [
+      {
+        "can": "10",
+        "expo": "Descripción del servicio 1",
+        "id_serv2": "001",
+        "serv": "Servicio 1",
+        "preciouf": "100.00"
+      },
+      {
+        "can": "20",
+        "expo": "Descripción del servicio 2",
+        "id_serv2": "002",
+        "serv": "Servicio 2",
+        "preciouf": "200.00"
+      }
+    ]
+  },
+  "err": {
+    "eserror": false,
+    "salir": false
+  }
+}
+```
+
+---
+
+
+### Obtener Facturas Entre Fechas
+Para obtener la lista de identificadores de facturas dentro de un intervalo de fechas, se debe realizar una petición al endpoint siguiente:
+
+```
+https://api.gaolos.com/xxx/apirestgetfacturasentrefechas?paramsin=
+```
+
+#### Parámetros de Entrada
+La solicitud debe incluir los siguientes parámetros en formato JSON:
+
+```json
+{
+  "parameters": {
+    "RefNeg": "Referencia negocio",
+    "ClaveSesion": "Token",
+    "ParamsKeys": ["fe_in","fe_fi"],
+    "ParamsValues": ["01/02/2025"],["06/02/2025"]
+  }
+}
+```
+
+- `RefNeg`: Referencia del negocio.
+- `ClaveSesion`: Token de autenticación.
+- `ParamsKeys`: Lista de claves de los parámetros **`fe_in`** (fecha de inicio) y **`fe_fi`** (fecha de fin).
+- `ParamsValues`: Lista de valores de las fechas correspondientes en formato **`dd/MM/yyyy`**, donde:
+  - **`fe_in`**: Fecha de inicio del período de consulta.
+  - **`fe_fi`**: Fecha de fin del período de consulta.
+
+**Nota:** `ParamsValues` debe contener las fechas de inicio (**`fe_in`**) y fin (**`fe_fi`**) en formato `dd/MM/yyyy`. La API devuelve una lista de identificadores de facturas dentro del intervalo de fechas especificado.
+
+**Importante:** El intervalo de fechas entre `fe_in` y `fe_fi` **no puede ser superior a 7 días**.
+
+
+### Respuesta de la API
+
+#### Formato de la Respuesta
+La API devuelve una lista de identificadores de facturas dentro del intervalo de fechas especificado.
+
+- **Facturas:**
+  - `obj`: Lista de identificadores únicos de facturas.
+
+## Ejemplo de Respuesta
+
+```json
+{
+  "obj": [392781, 392782, 392783, 392784],
+  "err": {
+    "eserror": false,
+    "salir": false
   }
 }
 ```
@@ -327,6 +466,87 @@ La API devuelve los siguientes campos para el presupuesto:
 ```
 
 ---
+
+
+### Obtener Asistencias Entre Fechas
+Para obtener la lista de identificadores de asistencias dentro de un intervalo de fechas, se debe realizar una petición al endpoint siguiente:
+
+```
+https://api.gaolos.com/xxx/apirestgetasistenciasentrefechas?paramsin=
+```
+
+#### Parámetros de Entrada
+La solicitud debe incluir los siguientes parámetros en formato JSON:
+
+```json
+{
+  "parameters": {
+    "RefNeg": "Referencia negocio",
+    "ClaveSesion": "Token",
+    "ParamsKeys": ["fe_in","fe_fi"],
+    "ParamsValues": ["01/02/2025"],["06/02/2025"]
+  }
+}
+```
+
+- `RefNeg`: Referencia del negocio.
+- `ClaveSesion`: Token de autenticación.
+- `ParamsKeys`: Lista de claves de los parámetros **`fe_in`** (fecha de inicio) y **`fe_fi`** (fecha de fin).
+- `ParamsValues`: Lista de valores de las fechas correspondientes en formato **`dd/MM/yyyy`**, donde:
+  - **`fe_in`**: Fecha de inicio del período de consulta.
+  - **`fe_fi`**: Fecha de fin del período de consulta.
+
+**Nota:** `ParamsValues` debe contener las fechas de inicio (**`fe_in`**) y fin (**`fe_fi`**) en formato `dd/MM/yyyy`. La API devuelve una lista de identificadores de asistencia dentro del intervalo de fechas especificado.
+
+**Importante:** El intervalo de fechas entre `fe_in` y `fe_fi` **no puede ser superior a 7 días**.
+
+
+### Respuesta de la API
+
+#### Formato de la Respuesta
+La API devuelve una lista de identificadores de asistencia dentro del intervalo de fechas especificado.
+
+- **Asistencias:**
+  - `obj`: Lista de asistencias con los siguientes datos:
+    - `id_asis2`: Identificador único de la asistencia.
+    - `id_cli2`: Identificador del cliente asociado a la asistencia.
+    - `id_man2`: Identificador del mantenimiento asociado a la asistencia (si aplica).
+
+## Ejemplo de Respuesta
+
+```json
+{
+  "obj": [
+    {
+      "id_asis2": 226964,
+      "id_cli2": 26766,
+      "id_man2": 14856
+    },
+    {
+      "id_asis2": 226968,
+      "id_cli2": 11443,
+      "id_man2": 0
+    },
+    {
+      "id_asis2": 226969,
+      "id_cli2": 27624,
+      "id_man2": 0
+    },
+    {
+      "id_asis2": 226974,
+      "id_cli2": 13112,
+      "id_man2": 0
+    }
+  ],
+  "err": {
+    "eserror": false,
+    "salir": false
+  }
+}
+```
+
+---
+
 
 ## Obtener Mantenimiento
 Para solicitar los datos de mantenimiento específico, se debe realizar una petición al endpoint siguiente:
