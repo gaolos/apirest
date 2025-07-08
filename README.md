@@ -137,6 +137,7 @@ La API devuelve los siguientes campos para la factura y sus vencimientos:
   - `ven`: Lista de vencimientos.
   - `obs`: Observaciones de la factura.
   - `id_soli2`: Identificador de la tarea pendiente.
+  - `id_manplan`: Identificador de la planificación de mantenimiento, si existe.
 
 - **Vencimiento:**
   - `fe_ve`: Fecha de vencimiento.
@@ -669,7 +670,7 @@ https://api.gaolos.com/xxx/apirestgetdocumento?paramsin=
 ```
 *Devuelve el certificado del último mantenimiento finalizado en formato PDF.*
 
-#### Documento Mantenimiento Certificado
+#### Documento Mantenimiento Certificado - Método 1
 ##### Parámetros de Entrada
 ```json
 {
@@ -683,7 +684,21 @@ https://api.gaolos.com/xxx/apirestgetdocumento?paramsin=
 ```
 *Devuelve el certificado indicado en formato PDF.*
 
-#### Documento Mantenimiento Informe
+#### Documento Mantenimiento Certificado - Método 2
+##### Parámetros de Entrada
+```json
+{
+  "parameters": {
+    "RefNeg": "Referencia negocio",
+    "ClaveSesion": "Token",
+    "ParamsKeys": ["id_manplanc"],
+    "ParamsValues": [23491001]
+  }
+}
+```
+*Devuelve el certificado indicado en formato PDF.*
+
+#### Documento Mantenimiento Informe - Método 1
 ##### Parámetros de Entrada
 ```json
 {
@@ -692,6 +707,20 @@ https://api.gaolos.com/xxx/apirestgetdocumento?paramsin=
     "ClaveSesion": "Token",
     "ParamsKeys": ["id_manplan2i"],
     "ParamsValues": [402298]
+  }
+}
+```
+*Devuelve el informe indicado en formato PDF.*
+
+#### Documento Mantenimiento Informe - Método 2
+##### Parámetros de Entrada
+```json
+{
+  "parameters": {
+    "RefNeg": "Referencia negocio",
+    "ClaveSesion": "Token",
+    "ParamsKeys": ["id_manplani"],
+    "ParamsValues": [23491001]
   }
 }
 ```
